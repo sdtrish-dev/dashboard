@@ -1,3 +1,11 @@
+const { register } = require('ts-node');
+
+// Register ts-node to handle TypeScript files with the .ts extension
+register({
+  compilerOptions: {
+    module: 'CommonJS', // Ensure CommonJS module output
+  },
+});
 const { db } = require('@vercel/postgres');
 const {
   invoices,
@@ -6,6 +14,11 @@ const {
   users,
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
+
+const {
+  insertCryptoData,
+  fetchCryptoData,
+} = require('../app/lib/financeService.ts');
 
 async function seedUsers(client) {
   try {
@@ -160,20 +173,40 @@ async function seedRevenue(client) {
   }
 }
 
+async function seedCryptoData(client) {
+  try {
+    // Fetch cryptocurrency data from the finance API
+    const btcData = await fetchCryptoData('BTC'); // Example: Fetch Bitcoin data
+    const ethData = await fetchCryptoData('ETH'); // Example: Fetch Ethereum data
+
+    // Insert cryptocurrency data into the database
+    await insertCryptoData('BTC', btcData);
+    await insertCryptoData('ETH', ethData);
+
+    console.log('Cryptocurrency data inserted successfully');
+  } catch (error) {
+    console.error('Error seeding cryptocurrency data:', error);
+    throw error;
+  }
+}
+
 async function main() {
   const client = await db.connect();
 
-  await seedUsers(client);
-  await seedCustomers(client);
-  await seedInvoices(client);
-  await seedRevenue(client);
-
-  await client.end();
+  try {
+    await seedUsers(client);
+    await seedCustomers(client);
+    await seedInvoices(client);
+    await seedRevenue(client);
+    await seedCryptoData(client);
+  } catch (error) {
+    console.error('An error occurred while seeding the database:', error);
+    throw error;
+  } finally {
+    await client.end();
+  }
 }
 
 main().catch((err) => {
-  console.error(
-    'An error occurred while attempting to seed the database:',
-    err,
-  );
+  console.error('An error occurred while running the seed script:', err);
 });
