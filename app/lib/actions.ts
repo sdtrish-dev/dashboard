@@ -135,3 +135,38 @@ export async function authenticate(
     throw error;
   }
 }
+export type ApiKeyFormState = {
+  errors?: {
+    apiKey?: string[];
+  };
+  message?: string | null;
+};
+// Define API key schema for validation
+const ApiKeySchema = z.object({
+  apiKey: z.string().nonempty({
+    message: 'API key is required.',
+  }),
+});
+export async function createApiKeyForm(prevState: ApiKeyFormState, formData: FormData) {
+  // Validate API key using Zod
+  const validatedFields = ApiKeySchema.safeParse({
+    apiKey: formData.get('apiKey'),
+  });
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'API Key is required.',
+    };
+  }
+
+  // Handle API key submission logic
+  const apiKey = validatedFields.data.apiKey;
+
+  // Return success message or any additional data
+  return {
+    message: 'API Key has been successfully validated.',
+    apiKey: apiKey,
+  };
+}

@@ -16,8 +16,8 @@ const {
 const bcrypt = require('bcrypt');
 
 const {
-  insertCryptoData,
-  fetchCryptoData,
+  insertFinancialData,
+  fetchFinancialData,
 } = require('../app/lib/financeService.ts');
 
 async function seedUsers(client) {
@@ -173,7 +173,7 @@ async function seedRevenue(client) {
   }
 }
 
-async function seedCryptoData(client) {
+async function seedFinancialData(client) {
   try {
     // Fetch cryptocurrency data from the finance API
     const btcData = await fetchCryptoData('BTC'); // Example: Fetch Bitcoin data
@@ -198,7 +198,7 @@ async function main() {
     await seedCustomers(client);
     await seedInvoices(client);
     await seedRevenue(client);
-    await seedCryptoData(client);
+    await seedFinancialData(client);
   } catch (error) {
     console.error('An error occurred while seeding the database:', error);
     throw error;
