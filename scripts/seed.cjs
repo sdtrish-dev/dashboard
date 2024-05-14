@@ -15,11 +15,6 @@ const {
 } = require('../app/lib/placeholder-data.js');
 const bcrypt = require('bcrypt');
 
-const {
-  insertFinancialData,
-  fetchFinancialData,
-} = require('../app/lib/financeService.ts');
-
 async function seedUsers(client) {
   try {
     await client.sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
@@ -173,23 +168,6 @@ async function seedRevenue(client) {
   }
 }
 
-async function seedFinancialData(client) {
-  try {
-    // Fetch cryptocurrency data from the finance API
-    const btcData = await fetchCryptoData('BTC'); // Example: Fetch Bitcoin data
-    const ethData = await fetchCryptoData('ETH'); // Example: Fetch Ethereum data
-
-    // Insert cryptocurrency data into the database
-    await insertCryptoData('BTC', btcData);
-    await insertCryptoData('ETH', ethData);
-
-    console.log('Cryptocurrency data inserted successfully');
-  } catch (error) {
-    console.error('Error seeding cryptocurrency data:', error);
-    throw error;
-  }
-}
-
 async function main() {
   const client = await db.connect();
 
@@ -198,7 +176,6 @@ async function main() {
     await seedCustomers(client);
     await seedInvoices(client);
     await seedRevenue(client);
-    await seedFinancialData(client);
   } catch (error) {
     console.error('An error occurred while seeding the database:', error);
     throw error;

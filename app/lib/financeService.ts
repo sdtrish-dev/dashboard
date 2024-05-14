@@ -122,3 +122,48 @@ export async function fetchFinancialData(symbol: string, type: string): Promise<
         throw error;
     }
 }
+export async function insertApiKey(userId: string, apiKey: string): Promise<void> {
+    try {
+        const client = await db.connect();
+
+        const insertQuery = `
+            INSERT INTO api_keys (user_id, api_key)
+            VALUES ($1, $2)
+            ON CONFLICT (user_id) DO UPDATE SET api_key = $2;
+        `;
+
+        await client.query(insertQuery, [userId, apiKey]);
+
+        await client.release();
+
+        console.log(`API key for user ${userId} inserted/updated successfully`);
+    } catch (error) {
+        console.error('Error inserting API key:', error);
+        throw error;
+    }
+}
+
+export async function fetchApiKey(userId: string): Promise<string | null> {
+    try {
+        const client = await db.connect();
+
+        const fetchQuery = `
+            SELECT api_key
+            FROM api_keys
+            WHERE user_id = $1;
+        `;
+
+        const { rows } = await client.query(fetchQuery, [userId]);
+
+        await client.release();
+
+        if (rows.length > 0) {
+            return rows[0].api_key;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching API key:', error);
+        throw error;
+    }
+}
