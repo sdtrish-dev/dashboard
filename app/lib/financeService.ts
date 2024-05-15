@@ -193,3 +193,43 @@ export async function insertWidgetIntoDatabase(dataType: string, tickerSymbol: s
     throw new Error(`Database Error: Failed to create widget. ${error}`);
   }
 }
+// Function to fetch the latest data for a widget from the database
+
+export async function fetchLatestWidgetData(widgetId: number) {
+  try {
+    const client = await db.connect();
+
+    const fetchQuery = `
+      SELECT *
+      FROM widgets
+      WHERE id = $1
+      ORDER BY id DESC
+      LIMIT 1
+    `;
+
+    const { rows } = await client.query(fetchQuery, [widgetId]);
+
+    await client.release();
+
+    if (rows.length > 0) {
+      const id = Number(rows[0].id ?? '0');
+      const data_type = rows[0].data_type ?? '';
+      const ticker_symbol = rows[0].ticker_symbol ?? '';
+      const widget_name = rows[0].widget_name ?? '';
+      const refresh_interval = Number(rows[0].refresh_interval ?? '0');
+
+      return {
+        id,
+        data_type,
+        ticker_symbol,
+        widget_name,
+        refresh_interval,
+      };
+    } else {
+      throw new Error('No data found for this widget');
+    }
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch widget data.');
+  }
+}

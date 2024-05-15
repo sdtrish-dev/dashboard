@@ -7,6 +7,10 @@ import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
+import WidgetDisplay from '@/app/ui/widgets/widget-display';
+import { fetchLatestWidgetData } from '@/app/lib/financeService';
+import { useState, useEffect } from 'react';
+
  
 export const metadata: Metadata = {
   title: 'Overview',
@@ -14,11 +18,16 @@ export const metadata: Metadata = {
  
 export default async function Page() {
   const { totalPaidInvoices, totalPendingInvoices, numberOfInvoices, numberOfCustomers } = await fetchCardData();
+  const widgetData = await fetchLatestWidgetData(1);
+  
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
+      <div>
+        <WidgetDisplay  widgetData={widgetData} />
+    </div>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />
