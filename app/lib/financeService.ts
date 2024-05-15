@@ -194,7 +194,6 @@ export async function insertWidgetIntoDatabase(dataType: string, tickerSymbol: s
   }
 }
 // Function to fetch the latest data for a widget from the database
-
 export async function fetchLatestWidgetData(widgetId: number) {
   try {
     const client = await db.connect();
@@ -218,12 +217,26 @@ export async function fetchLatestWidgetData(widgetId: number) {
       const widget_name = rows[0].widget_name ?? '';
       const refresh_interval = Number(rows[0].refresh_interval ?? '0');
 
+      // Fetch the financial data for the widget's ticker symbol and type
+      const financialData = await fetchFinancialData(ticker_symbol, data_type);
+
+      // Extract the latest price and price change from the financial data
+      const timeSeries = data_type === 'crypto' ? financialData['Time Series (Digital Currency Daily)'] : financialData['Time Series (Daily)'];
+      const latestDate = Object.keys(timeSeries)[0];
+      const latestData = timeSeries[latestDate];
+      const price = parseFloat(latestData['4. close']);
+      const previousData = timeSeries[Object.keys(timeSeries)[1]];
+      const previousPrice = parseFloat(previousData['4. close']);
+      const price_change = price - previousPrice;
+
       return {
         id,
         data_type,
         ticker_symbol,
         widget_name,
         refresh_interval,
+        price,
+        price_change,
       };
     } else {
       throw new Error('No data found for this widget');

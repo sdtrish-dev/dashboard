@@ -173,7 +173,8 @@ export async function createApiKeyForm(prevState: ApiKeyFormState, formData: For
 }
 // Update the schema for the widget creation form
 const WidgetSchema = z.object({
-  dataType: z.enum(['crypto', 'stock'], {
+  id: z.string(),
+  dataType: z.enum(['cryptocurrency', 'stock'], {
     invalid_type_error: 'Please select a valid data type (crypto or stock).',
   }),
   tickerSymbol: z.string({
@@ -182,9 +183,9 @@ const WidgetSchema = z.object({
   widgetName: z.string({
     invalid_type_error: 'Please enter a valid widget name.',
   }),
-  refreshInterval: z.number().min(1, {
-    message: 'Please enter a refresh interval greater than 0.',
-  }),
+  refreshInterval: z.coerce
+    .number()
+    .gt(0, { message: 'Please enter a refresh interval greater than 0.' }),
 });
 
 // Update the state type
@@ -197,48 +198,40 @@ export type WidgetFormState = {
   };
   message?: string | null;
 };
-
+const CreateWidget = WidgetSchema.omit({ id: true });
 // Update the function to create a new widget
-export async function createWidget(prevState: WidgetFormState, formData: Record<string, any>): Promise<WidgetFormState> {
-  try {
-    // Reset errors and message
-    const newState: WidgetFormState = {
-      errors: {},
-      message: null,
+export async function createWidget(prevState: WidgetFormState, formData: FormData) {
+  // Validate form using Zod
+  const validatedFields = CreateWidget.safeParse({
+    dataType: formData.get('dataType'),
+    tickerSymbol: formData.get('tickerSymbol'),
+    widgetName: formData.get('widgetName'),
+    refreshInterval: formData.get('refreshInterval'),
+  });
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Widget.',
     };
-
-    // Validate form using Zod
-    const validatedFields = WidgetSchema.safeParse({
-      dataType: formData['dataType'],
-      tickerSymbol: formData['tickerSymbol'],
-      widgetName: formData['widgetName'],
-      refreshInterval: Number(formData['refreshInterval']),
-    });
-
-    // If form validation fails, populate errors and return
-    if (!validatedFields.success) {
-      newState.errors = validatedFields.error.flatten().fieldErrors;
-      newState.message = 'Failed to create widget. Please correct the errors.';
-      return newState;
-    }
-
-    // Prepare data for insertion into the database
-    const { dataType, tickerSymbol, widgetName, refreshInterval } = validatedFields.data;
-
-    // Insert data into the database
-    try {
-      await insertWidgetIntoDatabase(dataType, tickerSymbol, widgetName, refreshInterval);
-
-      // Set success message
-      newState.message = 'Widget created successfully!';
-    } catch (error) {
-      // If a database error occurs, set error message
-      newState.message = 'Database Error: Failed to create widget.';
-    }
-
-    return newState;
-  } catch (error) {
-    console.error('Error creating widget:', error);
-    throw error;
   }
+
+  // Prepare data for insertion into the database
+  const { dataType, tickerSymbol, widgetName, refreshInterval } = validatedFields.data;
+
+  // Insert data into the database
+  try {
+    await insertWidgetIntoDatabase(dataType, tickerSymbol, widgetName, refreshInterval);
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: 'Database Error: Failed to Create Widget.',
+    };
+  }
+
+  // Revalidate the cache for the widgets page and redirect the user.
+  revalidatePath('/dashboard/settings');
+  redirect('/dashboard/settings');
+
 }

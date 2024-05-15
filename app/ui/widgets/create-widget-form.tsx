@@ -3,9 +3,14 @@ import React, { useState } from 'react';
 import { useFormState } from 'react-dom'; // Assuming this is your custom hook for form state management
 import { createWidget } from '@/app/lib/actions';
 import { Button } from '@/app/ui/button'; // Import your Button and other UI components
+import {
+  CurrencyDollarIcon,
+  BanknotesIcon
+} from '@heroicons/react/24/outline';
+import { TickerSymbol } from '@/app/lib/definitions';
 
 
-export default function WidgetCreationForm() {
+export default function WidgetCreationForm({ ticker_symbols }: { ticker_symbols: TickerSymbol[] }) {
 const initialState = { message: null, errors: {} };
     const [state, dispatch] = useFormState(createWidget, initialState);
 
@@ -15,13 +20,8 @@ const initialState = { message: null, errors: {} };
     const [widgetName, setWidgetName] = useState('');
     const [refreshInterval, setRefreshInterval] = useState('');
 
-    // const handleSubmit = (event) => {
-    //     event.preventDefault();
-    //     dispatch({ dataType, tickerSymbol, widgetName, refreshInterval });
-    // };
-
     return (
-        <form action={dispatch}>
+       <form action={dispatch}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         <div className="mb-4">
                 <label htmlFor="widgetName" className="mb-2 block text-sm font-medium">
@@ -38,38 +38,83 @@ const initialState = { message: null, errors: {} };
                 />
             </div>
         {/* Data Type */}
-        <div className="mb-4">
-          <label htmlFor="dataType" className="mb-2 block text-sm font-medium">
+        <fieldset className="mb-4">
+          <legend className="mb-2 block text-sm font-medium" aria-describedby='status-error'>
             Data Type
-          </label>
-          <select 
-            id="dataType" 
-            name="dataType" 
-            value={dataType}
-            onChange={(e) => setDataType(e.target.value)}
-            required
-            className="peer block w-1/3 cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-          >
-            <option value="">Select Data Type</option>
-            <option value="crypto">Cryptocurrency</option>
-            <option value="stock">Stock</option>
-          </select>
-        </div>
+          </legend>
+          <div className="rounded-md border border-gray-200 bg-white px-[14px] py-3">
+            <div className="flex gap-4">
+              <div className="flex items-center">
+                <input
+                  id="cryptocurrency"
+                  name="dataType"
+                  type="radio"
+                  value="cryptocurrency"
+                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                />
+                <label
+                  htmlFor="cryptocurrency"
+                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600"
+                >
+                  Cryptocurrency 
+                  <CurrencyDollarIcon className="h-4 w-4" />
+                </label>
+              </div>
+              <div className="flex items-center">
+                <input
+                  id="stock"
+                  name="dataType"
+                  type="radio"
+                  value="stock"
+                  className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                />
+                <label
+                  htmlFor="stock"
+                  className="ml-2 flex cursor-pointer items-center gap-1.5 rounded-full bg-green-500 px-3 py-1.5 text-xs font-medium text-white"
+                >
+                  Stock 
+                  <BanknotesIcon className="h-4 w-4" />
+                  
+                </label>
+              </div>
+            </div>
+          </div>
+         
+        </fieldset>
+        
 
         {/* Ticker Symbol */}
         <div className="mb-4">
-          <label htmlFor="tickerSymbol" className="mb-2 block text-sm font-medium">
+          <label htmlFor="ticker_symbol" className="mb-2 block text-sm font-medium">
             Ticker Symbol
           </label>
-          <input 
-            id="tickerSymbol" 
-            name="tickerSymbol" 
-            value={tickerSymbol}
-            onChange={(e) => setTickerSymbol(e.target.value)}
-            required
-            className="peer block w-1/3 cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-
-          />
+          <div className="relative">
+            <select
+              id="tickerSymbol"
+              name="tickerSymbol"
+              className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              defaultValue=""
+              // aria-describedby='ticker_symbol-error'
+            >
+              <option value="" disabled>
+                Select a Ticker Symbol
+              </option>
+              {ticker_symbols?.map((symbol) => (
+                <option key={symbol.id} value={symbol.id}>
+                  {symbol.name}
+                </option>
+              ))}
+            </select>
+            {/* <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" /> */}
+          </div>
+           {/* <div id="customer-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.customerId &&
+                state.errors.customerId.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
+            </div> */}
         </div>
         
 
@@ -88,9 +133,6 @@ const initialState = { message: null, errors: {} };
 
                 />
             </div>
-
-        {/* Display form submission message */}
-        {state.message && <p className="text-green-500">{state.message}</p>}
 
         {/* Submit Button */}
         <Button type="submit">Create Widget</Button>

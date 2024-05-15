@@ -7,7 +7,8 @@ interface WidgetData {
   ticker_symbol: string;
   widget_name: string;
   refresh_interval: number;
-  // Add any other properties that are part of the widget data
+  price: number;
+  price_change: number;
 }
 
 interface WidgetDisplayProps {
@@ -15,13 +16,15 @@ interface WidgetDisplayProps {
 }
 
 const WidgetDisplay: React.FC<WidgetDisplayProps> = ({ widgetData }) => {
+  const priceIndicator = widgetData.price_change > 0 ? '🟢' : '🔴';
+
   return (
     <div>
       <h2>{widgetData.widget_name}</h2>
       <p>Type: {widgetData.data_type}</p>
       <p>Ticker Symbol: {widgetData.ticker_symbol}</p>
       <p>Refresh Interval: {widgetData.refresh_interval}</p>
-      {/* Display any other properties of the widget data */}
+      <p>Price: {widgetData.price} {priceIndicator}</p>
     </div>
   );
 };

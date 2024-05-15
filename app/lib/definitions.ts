@@ -86,3 +86,16 @@ export type InvoiceForm = {
   amount: number;
   status: 'pending' | 'paid';
 };
+
+export type WidgetForm = {
+  id: string;
+  name: string;
+  data_type: 'cryptocurrency' | 'stock';
+  ticker_symbol: string;
+  refresh_interval: number;
+};
+
+export type TickerSymbol = {
+  id: string;
+  name: string;
+};
