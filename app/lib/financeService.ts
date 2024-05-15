@@ -167,3 +167,29 @@ export async function fetchApiKey(userId: string): Promise<string | null> {
         throw error;
     }
 }
+
+// Function to insert a new widget into the database
+export async function insertWidgetIntoDatabase(dataType: string, tickerSymbol: string, widgetName: string, refreshInterval: number): Promise<void> {
+  try {
+    const client = await db.connect();
+
+    const insertQuery = `
+      INSERT INTO widgets (data_type, ticker_symbol, widget_name, refresh_interval)
+      VALUES ($1, $2, $3, $4);
+    `;
+
+    await client.query(insertQuery, [
+      dataType,
+      tickerSymbol,
+      widgetName,
+      refreshInterval
+    ]);
+
+    await client.release();
+
+    console.log(`Widget with name ${widgetName} inserted successfully`);
+  } catch (error) {
+    console.error('Error inserting widget into database:', error);
+    throw new Error(`Database Error: Failed to create widget. ${error}`);
+  }
+}

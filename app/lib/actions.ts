@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { insertWidgetIntoDatabase } from '@/app/lib/financeService';
  
 const FormSchema = z.object({
   id: z.string(),
@@ -169,4 +170,75 @@ export async function createApiKeyForm(prevState: ApiKeyFormState, formData: For
     message: 'API Key has been successfully validated.',
     apiKey: apiKey,
   };
+}
+// Update the schema for the widget creation form
+const WidgetSchema = z.object({
+  dataType: z.enum(['crypto', 'stock'], {
+    invalid_type_error: 'Please select a valid data type (crypto or stock).',
+  }),
+  tickerSymbol: z.string({
+    invalid_type_error: 'Please enter a valid ticker symbol.',
+  }),
+  widgetName: z.string({
+    invalid_type_error: 'Please enter a valid widget name.',
+  }),
+  refreshInterval: z.number().min(1, {
+    message: 'Please enter a refresh interval greater than 0.',
+  }),
+});
+
+// Update the state type
+export type WidgetFormState = {
+  errors?: {
+    dataType?: string[];
+    tickerSymbol?: string[];
+    widgetName?: string[];
+    refreshInterval?: string[];
+  };
+  message?: string | null;
+};
+
+// Update the function to create a new widget
+export async function createWidget(prevState: WidgetFormState, formData: Record<string, any>): Promise<WidgetFormState> {
+  try {
+    // Reset errors and message
+    const newState: WidgetFormState = {
+      errors: {},
+      message: null,
+    };
+
+    // Validate form using Zod
+    const validatedFields = WidgetSchema.safeParse({
+      dataType: formData['dataType'],
+      tickerSymbol: formData['tickerSymbol'],
+      widgetName: formData['widgetName'],
+      refreshInterval: Number(formData['refreshInterval']),
+    });
+
+    // If form validation fails, populate errors and return
+    if (!validatedFields.success) {
+      newState.errors = validatedFields.error.flatten().fieldErrors;
+      newState.message = 'Failed to create widget. Please correct the errors.';
+      return newState;
+    }
+
+    // Prepare data for insertion into the database
+    const { dataType, tickerSymbol, widgetName, refreshInterval } = validatedFields.data;
+
+    // Insert data into the database
+    try {
+      await insertWidgetIntoDatabase(dataType, tickerSymbol, widgetName, refreshInterval);
+
+      // Set success message
+      newState.message = 'Widget created successfully!';
+    } catch (error) {
+      // If a database error occurs, set error message
+      newState.message = 'Database Error: Failed to create widget.';
+    }
+
+    return newState;
+  } catch (error) {
+    console.error('Error creating widget:', error);
+    throw error;
+  }
 }
