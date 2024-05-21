@@ -8,6 +8,7 @@ import {
   BanknotesIcon
 } from '@heroicons/react/24/outline';
 import { TickerSymbol } from '@/app/lib/definitions';
+import { stockSymbols, cryptoSymbols } from '@/app/lib/ticker-symbols';
 
 
 export default function WidgetCreationForm({ ticker_symbols }: { ticker_symbols: TickerSymbol[] }) {
@@ -19,6 +20,22 @@ const initialState = { message: null, errors: {} };
     const [tickerSymbol, setTickerSymbol] = useState('');
     const [widgetName, setWidgetName] = useState('');
     const [refreshInterval, setRefreshInterval] = useState('');
+
+  // Function to handle data type change
+  const handleDataTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setDataType(event.target.value);
+  };
+
+  // Get the ticker symbols based on the selected data type
+  let tickerSymbols;
+    if (dataType === 'cryptocurrency') {
+      tickerSymbols = cryptoSymbols;
+    } else if (dataType === 'stock') {
+      tickerSymbols = stockSymbols;
+    } else {
+      tickerSymbols = [...cryptoSymbols, ...stockSymbols];
+    }
+
 
     return (
        <form action={dispatch}>
@@ -50,6 +67,7 @@ const initialState = { message: null, errors: {} };
                   name="dataType"
                   type="radio"
                   value="cryptocurrency"
+                  onChange={handleDataTypeChange}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -66,6 +84,7 @@ const initialState = { message: null, errors: {} };
                   name="dataType"
                   type="radio"
                   value="stock"
+                  onChange={handleDataTypeChange}
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
                 />
                 <label
@@ -89,7 +108,7 @@ const initialState = { message: null, errors: {} };
             Ticker Symbol
           </label>
           <div className="relative">
-            <select
+           <select
               id="tickerSymbol"
               name="tickerSymbol"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
@@ -99,22 +118,14 @@ const initialState = { message: null, errors: {} };
               <option value="" disabled>
                 Select a Ticker Symbol
               </option>
-              {ticker_symbols?.map((symbol) => (
-                <option key={symbol.id} value={symbol.id}>
-                  {symbol.name}
+              {tickerSymbols.map((symbol) => (
+                <option key={symbol} value={symbol}>
+                  {symbol}
                 </option>
               ))}
             </select>
             {/* <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" /> */}
           </div>
-           {/* <div id="customer-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.customerId &&
-                state.errors.customerId.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div> */}
         </div>
         
 
