@@ -10,7 +10,7 @@ import { Metadata } from 'next';
 import WidgetDisplay from '@/app/ui/widgets/widget-display';
 import { fetchLatestWidgetData } from '@/app/lib/financeService';
 import { useState, useEffect } from 'react';
-
+import { WidgetData } from '@/app/ui/widgets/widget-display';
  
 export const metadata: Metadata = {
   title: 'Overview',
@@ -25,9 +25,11 @@ export default async function Page() {
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
-        <div>
-          <WidgetDisplay loading={false} error={null} widgetData={widgetData} />
-      </div>
+        <WidgetDisplay
+          loading={false}
+          error={null}
+          widgetData={widgetData}
+        />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />

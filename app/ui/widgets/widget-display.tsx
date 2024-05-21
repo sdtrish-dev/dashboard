@@ -1,7 +1,7 @@
 // widget-display.tsx
 import React from 'react';
 
-interface WidgetData {
+export interface WidgetData {
   id: number;
   data_type: string;
   ticker_symbol: string;

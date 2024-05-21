@@ -13,7 +13,9 @@ useEffect(() => {
     if (widgetId === null) return;
 
     fetchLatestWidgetData(Number(widgetId)).then(data => {
-        setWidgetId(data.id.toString());
+        if (data && data.id) {
+            setWidgetId(data.id.toString());
+        }
     }).catch(error => {
         console.error('Failed to fetch latest widget data:', error);
     });

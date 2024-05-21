@@ -243,22 +243,7 @@ export async function fetchLatestWidgetData(widgetId: number) {
   } catch (error) {
     console.error('Failed to fetch financial data:', error);
     return {
-      'Time Series (Digital Currency Daily)': {
-        '2022-01-01': {
-          '4. close': 'N/A'
-        },
-        '2021-12-31': {
-          '4. close': 'N/A'
-        }
-      },
-      'Time Series (Daily)': {
-        '2022-01-01': {
-          '4. close': 'N/A'
-        },
-        '2021-12-31': {
-          '4. close': 'N/A'
-        }
-      }
+      alert: 'Failed to fetch financial data',
     };
   }
 }
