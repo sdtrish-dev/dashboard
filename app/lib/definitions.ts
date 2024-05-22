@@ -93,9 +93,9 @@ export type TickerSymbol = {
 };
 
 export type WidgetsTable = {
+  refresh_rate: number;
+  type: 'cryptocurrency' | 'stock';
+  name: string;
   id: string;
-  widgetName: string;
   symbol: string;
-  refreshRate: number;
-  dataType: 'cryptocurrency' | 'stock';
 };

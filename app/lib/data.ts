@@ -176,6 +176,24 @@ export async function fetchInvoicesPages(query: string) {
   }
 }
 
+export async function fetchWidgetsPages(query: string) {
+  noStore();
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM widgets
+    WHERE
+      widgets.name ILIKE ${`%${query}%`} OR
+      widgets.symbol ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of widgets.');
+  }
+}
+
 export async function fetchInvoiceById(id: string) {
   noStore();
   try {
@@ -198,6 +216,30 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
+  }
+}
+export async function fetchWidgetById(id: string) {
+  noStore();
+  try {
+    const data = await sql<InvoiceForm>`
+      SELECT
+        widgets.id,
+        widgets.name,
+        widgets.symbol,
+        widgets.refresh_rate,
+        widgets.type
+
+      FROM widgets
+      WHERE widgets.id = ${id};
+    `;
+
+    const widget = data.rows.map((widget) => ({
+      ...widget,
+    }));
+    return widget[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch widget.');
   }
 }
 
