@@ -6,7 +6,7 @@ export async function fetchFinancialData(symbol: string, type: string): Promise<
         const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
         let apiUrl = '';
         if (type === 'crypto') {
-            apiUrl = `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=USD&apikey=${apiKey}`;
+            apiUrl = `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=CAD&apikey=${apiKey}`;
         } else if (type === 'stock') {
             apiUrl = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=${apiKey}`;
         } else {
