@@ -14,8 +14,6 @@ export default async function WidgetsTable({
     currentPage: number;
 }) {
     const widgets = await fetchFilteredWidgets(query, currentPage);
-    console.log(widgets);
-
     const stocks = widgets?.filter((widget) => widget.type === 'stock');
     const cryptocurrencies = widgets?.filter((widget) => widget.type === 'cryptocurrency');
 
