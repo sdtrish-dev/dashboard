@@ -1,12 +1,12 @@
 import EditWidget from '@/app/ui/widgets/edit-widget';
 import Breadcrumbs from '@/app/ui/invoices/breadcrumbs';
 import { fetchWidgetById } from '@/app/lib/data';
-import { updateInvoice } from '@/app/lib/actions';
+import { updateWidget } from '@/app/lib/actions';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
  
 export const metadata: Metadata = {
-  title: 'Edit Invoice',
+  title: 'Edit Widget',
 };
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -21,15 +21,15 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main>
       <Breadcrumbs
         breadcrumbs={[
-          { label: 'Widgets', href: '/dashboard/invoices' },
+          { label: 'Settings', href: '/dashboard/settings' },
           {
-            label: 'Edit Invoice',
-            href: `/dashboard/invoices/${id}/edit`,
+            label: 'Edit Widget',
+            href: `/dashboard/settings/${id}/edit`,
             active: true,
           },
         ]}
       />
-      {/* <Form invoice={invoice} customers={customers} /> */}
+      <EditWidget widget={widget} />
     </main>
   );
 }

@@ -235,6 +235,40 @@ export async function createWidget(prevState: WidgetState, formData: FormData) {
   // Revalidate the cache for the widgets page and redirect the user.
   revalidatePath('/dashboard/settings');
   redirect('/dashboard/settings');
+}
 
+const UpdateWidget = CreateWidgetSchema.omit({ id: true, date: true });
+export async function updateWidget(
+  id: string,
+  prevState: WidgetState,
+  formData: FormData,
+) {
+  const validatedFields = UpdateWidget.safeParse({
+    widgetName: formData.get('widgetName'),
+    symbol: formData.get('symbol'),
+    refreshRate: formData.get('refreshRate'),
+    dataType: formData.get('dataType'),
+  });
 
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Update Widget.',
+    };
+  }
+
+  const { widgetName, symbol, refreshRate, dataType } = validatedFields.data;
+
+  try {
+    await sql`
+      UPDATE widgets
+      SET name = ${widgetName}, symbol = ${symbol}, refresh_rate = ${refreshRate}, type = ${dataType}
+      WHERE id = ${id}
+    `;
+  } catch (error) {
+    return { message: 'Database Error: Failed to Update Widget.' };
+  }
+
+  revalidatePath('/dashboard/settings');
+  redirect('/dashboard/settings');
 }
