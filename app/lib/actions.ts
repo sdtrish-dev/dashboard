@@ -117,6 +117,17 @@ export async function deleteInvoice(id: string) {
   revalidatePath('/dashboard/invoices');
 }
 
+export async function deleteWidget(id: string) {
+    try {
+        await sql`DELETE FROM widgets WHERE id = ${id}`;
+    } catch (error) {
+        return {
+            message: 'An error occurred while deleting the widget.',
+        }
+    }
+  revalidatePath('/dashboard/settings');
+}
+
 export async function authenticate(
   prevState: string | undefined,
   formData: FormData,
@@ -134,4 +145,96 @@ export async function authenticate(
     }
     throw error;
   }
+}
+
+const CreateWidgetSchema = z.object({
+  id: z.string(),
+  widgetName: z.string({
+    invalid_type_error: 'Please enter a name for your financial widget.',
+  }),
+  symbol: z.string({
+    invalid_type_error: 'Please select a symbol for your financial widget.',
+  }),
+  refreshRate: z.coerce
+    .number()
+    .gt(0, { message: 'Please enter an amount greater than 0' }),
+  dataType: z.enum(['cryptocurrency', 'stock'], {
+    invalid_type_error: 'Please select a data type.',
+  }),
+  date: z.string(),
+});
+
+export type WidgetState = {
+  errors?: {
+    widgetName?: string[];
+    symbol?: string[];
+    refreshRate?: string[];
+    dataType?: string[];
+  };
+  message?: string | null;
+};
+ 
+const CreateWidget = CreateWidgetSchema.omit({ id: true, date: true });
+export async function createWidget(prevState: WidgetState, formData: FormData) {
+  // Validate form using Zod
+  const validatedFields = CreateWidget.safeParse({
+    widgetName: formData.get('widgetName'),
+    symbol: formData.get('symbol'),
+    refreshRate: formData.get('refreshRate'),
+    dataType: formData.get('dataType'),
+  });
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Create Widget.',
+    };
+  }
+
+  // Create table if it doesn't exist
+  try {
+    await sql`
+      CREATE TABLE IF NOT EXISTS widgets (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        symbol TEXT NOT NULL,
+        refresh_rate INTEGER NOT NULL,
+        type TEXT NOT NULL,
+        date DATE NOT NULL
+      )
+    `;
+  } catch (error) {
+  console.error('Error creating table:', error);
+  return {
+    message: `Database Error: Failed to Create Table.`,
+  };
+}
+
+  // Prepare data for insertion into the database
+  const { widgetName, symbol, refreshRate, dataType } = validatedFields.data;
+  const date = new Date().toISOString().split('T')[0];
+
+  
+
+  // Insert data into the database
+  try {
+    await sql`
+      INSERT INTO widgets (name, symbol, refresh_rate, type, date)
+      VALUES (${widgetName}, ${symbol}, ${refreshRate}, ${dataType}, ${date})
+    `;
+  } catch (error) {
+    console.error(error);
+    // If a database error occurs, return a more specific error.
+    return {
+      message: `Database Error: Failed to Create Widget.`,
+    };
+  }
+
+ 
+  // Revalidate the cache for the widgets page and redirect the user.
+  revalidatePath('/dashboard/settings');
+  redirect('/dashboard/settings');
+
+
 }
