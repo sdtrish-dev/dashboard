@@ -8,6 +8,8 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
+  WidgetsTable,
+  WidgetForm,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -127,6 +129,32 @@ export async function fetchFilteredInvoices(
   }
 }
 
+export async function fetchFilteredWidgets(query: string, currentPage: number) {
+  noStore();
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+  try {
+    const data = await sql<WidgetsTable>`
+      SELECT
+        widgets.id,
+        widgets.name,
+        widgets.symbol,
+        widgets.refresh_rate,
+        widgets.type
+      FROM widgets
+      WHERE
+        widgets.name ILIKE ${`%${query}%`} OR
+        widgets.symbol ILIKE ${`%${query}%`}
+      ORDER BY widgets.name ASC
+      LIMIT ${ITEMS_PER_PAGE} OFFSET ${offset}
+    `;
+    return data.rows;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch widgets.');
+  }
+}
+
+
 export async function fetchInvoicesPages(query: string) {
   noStore();
   try {
@@ -146,6 +174,24 @@ export async function fetchInvoicesPages(query: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch total number of invoices.');
+  }
+}
+
+export async function fetchWidgetsPages(query: string) {
+  noStore();
+  try {
+    const count = await sql`SELECT COUNT(*)
+    FROM widgets
+    WHERE
+      widgets.name ILIKE ${`%${query}%`} OR
+      widgets.symbol ILIKE ${`%${query}%`}
+  `;
+
+    const totalPages = Math.ceil(Number(count.rows[0].count) / ITEMS_PER_PAGE);
+    return totalPages;
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch total number of widgets.');
   }
 }
 
@@ -171,6 +217,30 @@ export async function fetchInvoiceById(id: string) {
   } catch (error) {
     console.error('Database Error:', error);
     throw new Error('Failed to fetch invoice.');
+  }
+}
+export async function fetchWidgetById(id: string) {
+  noStore();
+  try {
+    const data = await sql<WidgetForm>`
+      SELECT
+        widgets.id,
+        widgets.name,
+        widgets.symbol,
+        widgets.refresh_rate,
+        widgets.type
+
+      FROM widgets
+      WHERE widgets.id = ${id};
+    `;
+
+    const widget = data.rows.map((widget) => ({
+      ...widget,
+    }));
+    return widget[0];
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to fetch widget.');
   }
 }
 
