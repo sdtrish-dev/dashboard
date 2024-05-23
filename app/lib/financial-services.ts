@@ -10,12 +10,14 @@ const pool = new Pool({
 
 export async function fetchFinancialData(symbol: string, type: string, refreshRate: number): Promise<any> {
     try {
-        
         const now = Date.now();
-        const { rows } = await pool.query('SELECT * FROM cache WHERE symbol = $1 AND type = $2 AND $3 - timestamp < $4', [symbol, type, now, refreshRate * 60 * 60 * 1000]);
+        const thresholdTimestamp = now - refreshRate * 60 * 60 * 1000;
+
+        const { rows } = await pool.query('SELECT * FROM cache WHERE symbol = $1 AND type = $2 AND timestamp > $3', [symbol, type, thresholdTimestamp]);
         if (rows.length > 0) {
             return rows[0].data;
         }
+
         const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
         let apiUrl = '';
         if (type === 'cryptocurrency') {
