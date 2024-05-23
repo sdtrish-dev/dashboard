@@ -1,11 +1,10 @@
 import { fetchFinancialData } from "@/app/lib/financial-services";
 
 export default async function WidgetsData({symbol, type, refreshRate}: {symbol: string, type: string, refreshRate: number}) {
-    // Fetch the data
     const data = await fetchFinancialData(symbol, type, refreshRate);
 
     if (!data || !data['Meta Data']) {
-        return Promise.resolve(<div>Error: Unable to fetch data</div>);
+        return Promise.resolve(<div className="w-1/2">Sorry, your API limit has been reached for today.</div>);
     }
 
     const isCrypto = data['Meta Data']['2. Digital Currency Code'] !== undefined;
