@@ -27,10 +27,10 @@ export default async function Page({
         Settings
       </h1>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
-          <Search placeholder="Search invoices..." />
+          <Search placeholder="Search widgets..." />
             <CreateWidget />
         </div>
-      <WidgetsTable query={query} currentPage={currentPage} />
+        <WidgetsTable query={query} currentPage={currentPage} />
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />
       </div>
