@@ -1,6 +1,6 @@
 'use client';
 import { updateWidget } from '@/app/lib/actions';
-import { WidgetForm, TickerSymbol } from '@/app/lib/definitions';
+import { WidgetForm } from '@/app/lib/definitions';
 import {
     CurrencyDollarIcon,
     BanknotesIcon
@@ -102,7 +102,7 @@ export default function EditWidgetForm({
                     id="symbol"
                     name="symbol"
                     className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                    defaultValue=""
+                    defaultValue={widget.symbol}
                     aria-describedby='symbol-error'
                 >
                     <option value="" disabled>

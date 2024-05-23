@@ -8,7 +8,8 @@ import {
   LatestInvoiceRaw,
   User,
   Revenue,
-  WidgetsTable
+  WidgetsTable,
+  WidgetForm,
 } from './definitions';
 import { formatCurrency } from './utils';
 
@@ -221,7 +222,7 @@ export async function fetchInvoiceById(id: string) {
 export async function fetchWidgetById(id: string) {
   noStore();
   try {
-    const data = await sql<InvoiceForm>`
+    const data = await sql<WidgetForm>`
       SELECT
         widgets.id,
         widgets.name,
