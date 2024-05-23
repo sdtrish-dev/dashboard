@@ -1,10 +1,45 @@
-import { fetchFinancialData } from "@/app/lib/financial-services";
+'use client';
+import { useEffect, useState } from 'react';
 
-export default async function WidgetsData({symbol, type, refreshRate}: {symbol: string, type: string, refreshRate: number}) {
-    const data = await fetchFinancialData(symbol, type, refreshRate);
+export default function WidgetsData({symbol, type, refreshRate}: {symbol: string, type: string, refreshRate: number}) {
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+    setIsLoading(true);
+    try {
+        const res = await fetch(`/api/financial-data?symbol=${symbol}&type=${type}&refreshRate=${refreshRate}`);
+        const newData = await res.json();
+        if (newData && newData['Meta Data']) {
+            setData(newData);
+            setError(null); 
+        } else {
+            setError(null); 
+        }
+    } catch (err: any) { 
+        setError(err.message);
+    } finally {
+        setIsLoading(false);
+    }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, refreshRate);
+    return () => clearInterval(intervalId);
+  }, [symbol, type, refreshRate]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
     if (!data || !data['Meta Data']) {
-        return Promise.resolve(<div className="w-1/2">Sorry, your API limit has been reached for today.</div>);
+        return <div className="w-1/2">Sorry, your API limit has been reached for today.</div>;
     }
 
     const isCrypto = data['Meta Data']['2. Digital Currency Code'] !== undefined;
