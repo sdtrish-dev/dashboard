@@ -39,7 +39,7 @@ export default function WidgetsData({symbol, type, refreshRate}: {symbol: string
   }
 
     if (!data || !data['Meta Data']) {
-        return <div className="w-1/2">Sorry, your API limit has been reached for today.</div>;
+        return <div className="text-red-700">Sorry, your API limit has been reached for today.</div>;
     }
 
     const isCrypto = data['Meta Data']['2. Digital Currency Code'] !== undefined;
