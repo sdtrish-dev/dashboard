@@ -42,7 +42,7 @@ export default async function WidgetsTable({
 function WidgetCard({ widget }: { widget: WidgetsTable }) {
   return (
     <div key={widget.id} className="mb-2 w-full rounded-md bg-white p-4 shadow-lg">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-start">
         <div className="flex items-center">
           {widget.type === 'cryptocurrency' ? (
             <CurrencyDollarIcon className="h-6 w-6" />

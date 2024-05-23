@@ -14,7 +14,6 @@ export default function EditWidgetForm({
   widget
 }: {
   widget: WidgetForm;
-  symbols: TickerSymbol[];
 }) {
   const initialState = { message: null, errors: {} };
   const updateWidgetWithId = updateWidget.bind(null, widget.id);

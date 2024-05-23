@@ -29,7 +29,15 @@ export default async function Page({ params }: { params: { id: string } }) {
           },
         ]}
       />
-      <EditWidget widget={widget} />
+      <EditWidget
+        widget={{
+          ...widget,
+          refresh_rate: 0,
+          type: '',
+          name: '',
+          symbol: ''
+        }}
+      />
     </main>
   );
 }
