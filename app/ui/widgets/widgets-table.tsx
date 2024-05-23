@@ -5,6 +5,7 @@ import {
     BanknotesIcon
 } from '@heroicons/react/24/outline';
 import type { WidgetsTable } from '@/app/lib/definitions';
+import WidgetsData from '@/app/ui/widgets/widgets-data';
 
 export default async function WidgetsTable({
     query,
@@ -16,7 +17,7 @@ export default async function WidgetsTable({
     const widgets = await fetchFilteredWidgets(query, currentPage);
     const stocks = widgets?.filter((widget) => widget.type === 'stock');
     const cryptocurrencies = widgets?.filter((widget) => widget.type === 'cryptocurrency');
-    // const priceIndicator = widgetData.price_change > 0 ? '🟢' : '🔴';
+
 
     return (
         <div className="mt-6 flow-root">
@@ -50,12 +51,18 @@ function WidgetCard({ widget }: { widget: WidgetsTable }) {
           ) : (
             <BanknotesIcon className="h-6 w-6" />
           )}
-          <div className="ml-4">
+          <div className="ml-4 flex gap-20">
+            <div>
             <h3 className="text-lg font-medium">{widget.name}</h3>
             <p className="text-sm text-gray-500">Symbol: {widget.symbol}</p>
             <p className="text-sm text-gray-500">Refresh Rate: {widget.refresh_rate / 3600000}hrs</p>
             <p className="text-sm text-gray-500">Type: {widget.type}</p>
-            {/* <p className="mt-2 text-gray-500">Price: {widgetData.price} {priceIndicator}</p> */}
+            </div>
+            <WidgetsData 
+              symbol={widget.symbol} 
+              type={widget.type} 
+              refreshRate={widget.refresh_rate}
+            />
           </div>
         </div>
         <div className="flex gap-2">
