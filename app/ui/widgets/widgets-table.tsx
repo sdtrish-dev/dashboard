@@ -16,6 +16,7 @@ export default async function WidgetsTable({
     const widgets = await fetchFilteredWidgets(query, currentPage);
     const stocks = widgets?.filter((widget) => widget.type === 'stock');
     const cryptocurrencies = widgets?.filter((widget) => widget.type === 'cryptocurrency');
+    // const priceIndicator = widgetData.price_change > 0 ? '🟢' : '🔴';
 
     return (
         <div className="mt-6 flow-root">
@@ -52,8 +53,9 @@ function WidgetCard({ widget }: { widget: WidgetsTable }) {
           <div className="ml-4">
             <h3 className="text-lg font-medium">{widget.name}</h3>
             <p className="text-sm text-gray-500">Symbol: {widget.symbol}</p>
-            <p className="text-sm text-gray-500">Refresh Rate: {widget.refresh_rate} ms</p>
+            <p className="text-sm text-gray-500">Refresh Rate: {widget.refresh_rate / 3600000}hrs</p>
             <p className="text-sm text-gray-500">Type: {widget.type}</p>
+            {/* <p className="mt-2 text-gray-500">Price: {widgetData.price} {priceIndicator}</p> */}
           </div>
         </div>
         <div className="flex gap-2">

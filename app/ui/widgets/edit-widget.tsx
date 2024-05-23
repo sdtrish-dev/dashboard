@@ -18,7 +18,7 @@ export default function EditWidgetForm({
   const initialState = { message: null, errors: {} };
   const updateWidgetWithId = updateWidget.bind(null, widget.id);
   const [state, dispatch] = useFormState(updateWidgetWithId, initialState);
-  
+  const MIN_REFRESH_RATE_HOURS = 6;
   let symbols = [...stockSymbols, ...cryptoSymbols];
     
   return (
@@ -132,8 +132,8 @@ export default function EditWidgetForm({
                     id="refreshRate"
                     name="refreshRate"
                     type="number"
-                    step="0.01"
-                    placeholder="Enter refresh rate"
+                    step="0.5"
+                    placeholder={`Minimum ${MIN_REFRESH_RATE_HOURS} hours`}
                     className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                     aria-describedby='refreshRate-error'
                 />

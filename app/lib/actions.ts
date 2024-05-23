@@ -147,6 +147,8 @@ export async function authenticate(
   }
 }
 
+const MIN_REFRESH_RATE_HOURS = 6;
+
 const CreateWidgetSchema = z.object({
   id: z.string(),
   widgetName: z.string({
@@ -157,7 +159,7 @@ const CreateWidgetSchema = z.object({
   }),
   refreshRate: z.coerce
     .number()
-    .gt(0, { message: 'Please enter an amount greater than 0' }),
+    .min(MIN_REFRESH_RATE_HOURS, { message: `Please enter a refresh rate of at least ${MIN_REFRESH_RATE_HOURS} hours.` }),
   dataType: z.enum(['cryptocurrency', 'stock'], {
     invalid_type_error: 'Please select a data type.',
   }),
@@ -221,7 +223,7 @@ export async function createWidget(prevState: WidgetState, formData: FormData) {
   try {
     await sql`
       INSERT INTO widgets (name, symbol, refresh_rate, type, date)
-      VALUES (${widgetName}, ${symbol}, ${refreshRate}, ${dataType}, ${date})
+      VALUES (${widgetName}, ${symbol}, ${refreshRate * 3600000}, ${dataType}, ${date})
     `;
   } catch (error) {
     console.error(error);
@@ -262,7 +264,7 @@ export async function updateWidget(
   try {
     await sql`
       UPDATE widgets
-      SET name = ${widgetName}, symbol = ${symbol}, refresh_rate = ${refreshRate}, type = ${dataType}
+      SET name = ${widgetName}, symbol = ${symbol}, refresh_rate = ${refreshRate * 3600000}, type = ${dataType}
       WHERE id = ${id}
     `;
   } catch (error) {
