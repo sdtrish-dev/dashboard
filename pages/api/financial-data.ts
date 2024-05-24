@@ -7,6 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         const data = await fetchFinancialData(String(symbol), String(type), Number(refreshRate));
+        // console.log(data);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json({ message: (err as Error).message });

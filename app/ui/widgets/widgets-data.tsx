@@ -12,11 +12,15 @@ export default function WidgetsData({symbol, type, refreshRate}: {symbol: string
     try {
         const res = await fetch(`/api/financial-data?symbol=${symbol}&type=${type}&refreshRate=${refreshRate}`);
         const newData = await res.json();
+
+        // console.log(newData); 
+            
         if (newData && newData['Meta Data']) {
             setData(newData);
             setError(null); 
         } else {
-            setError(null); 
+            setData(null);  // Add this line
+            setError(null);  // Set the error state to null
         }
     } catch (err: any) { 
         setError(err.message);
@@ -52,10 +56,10 @@ export default function WidgetsData({symbol, type, refreshRate}: {symbol: string
 
     return (
         <div>
-            <p>Open: {Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p>High: {Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p>Low: {Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-            <p>Close: <span style={{color: priceChangeIndicator}}>{Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
+            <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+            <p>Close: <span style={{color: priceChangeIndicator}}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
         </div>
     );
 };
