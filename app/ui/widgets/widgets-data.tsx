@@ -12,15 +12,13 @@ export default function WidgetsData({symbol, type, refreshRate}: {symbol: string
     try {
         const res = await fetch(`/api/financial-data?symbol=${symbol}&type=${type}&refreshRate=${refreshRate}`);
         const newData = await res.json();
-
-        // console.log(newData); 
             
         if (newData && newData['Meta Data']) {
             setData(newData);
             setError(null); 
         } else {
-            setData(null);  // Add this line
-            setError(null);  // Set the error state to null
+            setData(null); 
+            setError(null);  
         }
     } catch (err: any) { 
         setError(err.message);

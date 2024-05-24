@@ -35,11 +35,9 @@ export async function fetchFinancialData(symbol: string, type: string, refreshRa
             throw new Error('Invalid type specified.');
         }
         const response = await axios.get(apiUrl);
-
+        
         if (response.status === 200 && response.data) {
-
            await pool.query('INSERT INTO cache (symbol, type, timestamp, data) VALUES ($1, $2, $3, $4) ON CONFLICT (symbol, type) DO UPDATE SET timestamp = $3, data = $4', [symbol, type, now, response.data]);
-
             return response.data;
         } else {
             throw new Error('Failed to fetch financial data');
