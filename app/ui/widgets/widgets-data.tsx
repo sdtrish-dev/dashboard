@@ -32,7 +32,7 @@ export default function WidgetsData({symbol, type, refreshRate, showAlert}: {sym
     return () => clearInterval(intervalId);
   }, [symbol, type, refreshRate]);
 
-  if (isLoading && !showAlert) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
