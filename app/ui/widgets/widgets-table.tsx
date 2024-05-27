@@ -31,7 +31,7 @@ export default async function WidgetsTable({
                             <WidgetCard key={widget.id} widget={widget} onlyShowAlerts={onlyShowAlerts} />
                         ))}
                     </div>
-                    <div className="xl:w-1/2 pl-2">
+                    <div className="xl:w-1/2 xl:pl-2 pl-0">
                         <h2 className="text-lg font-medium mb-2">Cryptocurrencies</h2>
                         {cryptocurrencies?.map((widget) => (
                             <WidgetCard key={widget.id} widget={widget} onlyShowAlerts={onlyShowAlerts} />
@@ -49,7 +49,7 @@ function WidgetCard({ widget, onlyShowAlerts }: { widget: WidgetsTable, onlyShow
     {!onlyShowAlerts ? (
     <div key={widget.id} className="mb-2 w-full rounded-md bg-white p-4 shadow-lg">
       <div className="xl:flex justify-between items-start">
-        <div className="flex items-start gap-12 pb-4">
+        <div className="flex items-start xl:gap-8 gap-12 pb-4">
             <>
               {widget.type === 'cryptocurrency' ? (
                 <CurrencyDollarIcon className="lg:mr-4 mr-0 lg:h-6 lg:w-6 h-10 w-10" />
