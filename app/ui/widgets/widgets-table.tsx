@@ -50,7 +50,6 @@ function WidgetCard({ widget, onlyShowAlerts }: { widget: WidgetsTable, onlyShow
     <div key={widget.id} className="mb-2 w-full rounded-md bg-white p-4 shadow-lg">
       <div className="xl:flex justify-between items-start">
         <div className="flex items-start gap-12 pb-4">
-          
             <>
               {widget.type === 'cryptocurrency' ? (
                 <CurrencyDollarIcon className="lg:mr-4 mr-0 lg:h-6 lg:w-6 h-10 w-10" />
@@ -66,18 +65,13 @@ function WidgetCard({ widget, onlyShowAlerts }: { widget: WidgetsTable, onlyShow
                 </div>
               </div>
             </>
-         
           <WidgetsData 
             symbol={widget.symbol} 
             type={widget.type} 
             refreshRate={widget.refresh_rate}
             showAlert={false}
           /> 
-        
-           
-          
         </div>
-      
           <div className="flex gap-2 justify-end">
             <UpdateWidget id={widget.id} />
             <DeleteWidget id={widget.id} />

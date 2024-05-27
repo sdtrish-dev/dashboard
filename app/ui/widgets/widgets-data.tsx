@@ -80,13 +80,13 @@ interface PriceAlertProps {
 }
 
 export function PriceAlert({ symbol, type, priceChangePercentage, priceChangeIndicator }: PriceAlertProps) {
-    if (Math.abs(priceChangePercentage) > 5) {
+    if (Math.abs(priceChangePercentage) > 2) {
         return (
-            <div className="alert alert-warning">
+            <div className="font-bold">
                 Price change alert for {symbol} ({type}): The price has changed by<span style={{color: priceChangeIndicator}}> {priceChangePercentage.toFixed(2)}%</span>.
             </div>
         );
     } 
 
-    return null;
+    return <div>No alerts for {symbol}</div>;
 }
