@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/outline';
 import type { WidgetsTable } from '@/app/lib/definitions';
 import WidgetsData from '@/app/ui/widgets/widgets-data';
+import DragDropWidgetsTable from '@/app/ui/widgets/drag-and-drop-widgets';
 
 export default async function WidgetsTable({
     query,
@@ -22,28 +23,11 @@ export default async function WidgetsTable({
 
 
     return (
-        <div className="mt-6 flow-root">
-            <div className="inline-block w-full align-middle">
-                <div className="rounded-lg bg-gray-50 p-2 mb-8 xl:flex justify-between">
-                    <div className="xl:w-1/2 pr-2">
-                        <h2 className="text-lg font-medium mb-2">Stocks</h2>
-                        {stocks?.map((widget) => (
-                            <WidgetCard key={widget.id} widget={widget} onlyShowAlerts={onlyShowAlerts} />
-                        ))}
-                    </div>
-                    <div className="xl:w-1/2 xl:pl-2 pl-0">
-                        <h2 className="text-lg font-medium mb-2">Cryptocurrencies</h2>
-                        {cryptocurrencies?.map((widget) => (
-                            <WidgetCard key={widget.id} widget={widget} onlyShowAlerts={onlyShowAlerts} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <DragDropWidgetsTable />
     );
 }
 
-function WidgetCard({ widget, onlyShowAlerts }: { widget: WidgetsTable, onlyShowAlerts: boolean }) {
+export function WidgetCard({ widget, onlyShowAlerts }: { widget: WidgetsTable, onlyShowAlerts: boolean }) {
   return (
     <>
     {!onlyShowAlerts ? (
