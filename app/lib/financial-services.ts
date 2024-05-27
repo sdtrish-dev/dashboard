@@ -21,7 +21,7 @@ export async function fetchFinancialData(symbol: string, type: string, refreshRa
 
         const now = Date.now();
         const thresholdTimestamp = now - refreshRate * 60 * 60 * 1000;
-        console.log(`Checking cache for symbol: ${symbol}, type: ${type}, with threshold: ${thresholdTimestamp}`);
+        // console.log(`Checking cache for symbol: ${symbol}, type: ${type}, with threshold: ${thresholdTimestamp}`);
         
         const { rows } = await pool.query('SELECT * FROM cache WHERE symbol = $1 AND type = $2 AND timestamp > $3', [symbol, type, thresholdTimestamp]);
 

@@ -7,18 +7,37 @@ import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
+import WidgetsTable from '@/app/ui/widgets/widgets-table';
+import { fetchWidgetsPages } from '@/app/lib/data';
+
  
 export const metadata: Metadata = {
   title: 'Overview',
 };
  
-export default async function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams?: {
+    query?: string;
+    page?: string;
+  };
+}) {
+  const query = searchParams?.query || '';
+  const currentPage = Number(searchParams?.page) || 1;
+  const totalPages = await fetchWidgetsPages(query);
   const { totalPaidInvoices, totalPendingInvoices, numberOfInvoices, numberOfCustomers } = await fetchCardData();
   return (
     <main>
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Dashboard
       </h1>
+      <Suspense fallback={<CardsSkeleton />}>
+        <div>
+          <div>Price Change Alerts will appear here.</div>
+          <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={true} />
+        </div>
+      </Suspense>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         <Suspense fallback={<CardsSkeleton />}>
           <CardWrapper />
