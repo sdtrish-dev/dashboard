@@ -118,13 +118,18 @@ export async function deleteInvoice(id: string) {
 }
 
 export async function deleteWidget(id: string) {
-    try {
-        await sql`DELETE FROM widgets WHERE id = ${id}`;
-    } catch (error) {
-        return {
-            message: 'An error occurred while deleting the widget.',
-        }
+  try {
+    const widget = await sql`SELECT * FROM widgets WHERE id = ${id}`;
+    if (widget.rowCount > 0) {
+      const symbol = widget.rows[0].symbol;
+      await sql`DELETE FROM widgets WHERE id = ${id}`;
+      await sql`DELETE FROM cache WHERE symbol = ${symbol}`;
     }
+  } catch (error) {
+    return {
+      message: 'An error occurred while deleting the widget.',
+    }
+  }
   revalidatePath('/dashboard/settings');
 }
 
