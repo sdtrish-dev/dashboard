@@ -61,10 +61,10 @@ export default function WidgetsData({symbol, type, refreshRate, showAlert}: {sym
             {showAlert && <PriceAlert symbol={symbol} type={type} priceChangePercentage={priceChangePercentage}  priceChangeIndicator={priceChangeIndicator}/>}
             {!showAlert && (
                <div>
-                <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                <p>Close: <span style={{color: priceChangeIndicator}}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span></p>
+                <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+                <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+                <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+                <p>Close: <span style={{color: priceChangeIndicator}}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</span></p>
             </div>  
             )}
             

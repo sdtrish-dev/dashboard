@@ -1,4 +1,3 @@
-// app/lib/financial-services.ts
 import axios from 'axios';
 import { db } from '@vercel/postgres';
 import pg from 'pg';
@@ -15,18 +14,27 @@ export async function fetchFinancialData(symbol: string, type: string, refreshRa
         }
 
         const refreshRateInHours = refreshRate / 3600000;
+        // console.log(`Refresh rate in hours: ${refreshRateInHours}`);
         if (typeof refreshRateInHours !== 'number' || refreshRateInHours <= 0 || refreshRateInHours > 24) {
             throw new Error(`Invalid refreshRate specified: ${refreshRateInHours}. It should be in hours and a reasonable value between 1 and 24.`);
         }
 
         const now = Date.now();
-        const thresholdTimestamp = now - refreshRate * 60 * 60 * 1000;
-        // console.log(`Checking cache for symbol: ${symbol}, type: ${type}, with threshold: ${thresholdTimestamp}`);
-        
-        const { rows } = await pool.query('SELECT * FROM cache WHERE symbol = $1 AND type = $2 AND timestamp > $3', [symbol, type, thresholdTimestamp]);
+        const thresholdTimestamp = now - refreshRate;
+        // console.log(`Current timestamp: ${now}, Threshold timestamp: ${thresholdTimestamp}`);
 
-        if (rows.length > 0 && now - rows[0].timestamp < refreshRate * 3600000) {
-            return rows[0].data;
+        const { rows } = await pool.query(
+            'SELECT * FROM cache WHERE symbol = $1 AND type = $2 AND timestamp > $3',
+            [symbol, type, thresholdTimestamp]
+        );
+        // console.log(`Cache query returned ${rows.length} rows.`);
+        if (rows.length > 0) {
+            // console.log(`Cache hit for ${symbol}. Last updated at ${rows[0].timestamp}`);
+            if (rows[0].timestamp > thresholdTimestamp) {
+                return rows[0].data;
+            } else {
+                console.log(`Cache data for ${symbol} is outdated.`);
+            }
         }
 
         const apiKey = process.env.ALPHA_VANTAGE_API_KEY;
@@ -40,8 +48,13 @@ export async function fetchFinancialData(symbol: string, type: string, refreshRa
         }
 
         const response = await axios.get(apiUrl);
+        // console.log(`API Response status: ${response.status}`);
         if (response.status === 200 && response.data) {
-            await pool.query('INSERT INTO cache (symbol, type, timestamp, data) VALUES ($1, $2, $3, $4) ON CONFLICT (symbol, type) DO UPDATE SET timestamp = $3, data = $4', [symbol, type, now, response.data]);
+            console.log(`Updating cache for ${symbol} at ${now}`);
+            await pool.query(
+                'INSERT INTO cache (symbol, type, timestamp, data) VALUES ($1, $2, $3, $4) ON CONFLICT (symbol, type) DO UPDATE SET timestamp = $3, data = $4',
+                [symbol, type, now, response.data]
+            );
             return response.data;
         } else {
             throw new Error('Failed to fetch financial data');
