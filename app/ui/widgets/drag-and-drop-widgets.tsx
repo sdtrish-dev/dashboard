@@ -5,7 +5,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { WidgetCard } from '@/app/ui/widgets/widgets-table';
 import type { WidgetsTable } from '@/app/lib/definitions';
 
-export function ReorderableWidgetList({ widgets, onReorder }: { widgets: any, onReorder: (newWidgets: any) => void }) {
+export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { widgets: any, onReorder: (newWidgets: any) => void, droppableId: string }) {
   const onDragEnd = (result: any) => {
     if (!result.destination) {
       return;
@@ -20,11 +20,11 @@ export function ReorderableWidgetList({ widgets, onReorder }: { widgets: any, on
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId="droppable">
+      <Droppable droppableId={droppableId}>
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
-            {widgets.map((widget: { id: any; refresh_rate: number; type: string; name: string; symbol: string; }, index: number) => (
-              <Draggable key={widget.id} draggableId={widget.id} index={index}>
+            {widgets.map((widget: { id: string; refresh_rate: number; type: string; name: string; symbol: string; }, index: number) => (
+              <Draggable key={widget.id} draggableId={widget.id.toString()} index={index}>
                 {(provided) => (
                   <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
                     <WidgetCard widget={widget} onlyShowAlerts={false}/>
@@ -68,22 +68,20 @@ export default function DragDropWidgetsTable() {
 
   return (
     <>
-    <div className="mt-6 flow-root">
-            <div className="inline-block w-full align-middle">
-                <div className="rounded-lg bg-gray-50 p-2 mb-8 xl:flex justify-between">
-                    <div className="xl:w-1/2 pr-2">
-                        <h2 className="text-lg font-medium mb-2">Stocks</h2>
-                        <ReorderableWidgetList widgets={stocks} onReorder={setStocks} />
-                    </div>
-                    <div className="xl:w-1/2 xl:pl-2 pl-0">
-                        <h2 className="text-lg font-medium mb-2">Cryptocurrencies</h2>
-                        <ReorderableWidgetList widgets={cryptocurrencies} onReorder={setCryptocurrencies} />
-                    </div>
-                </div>
+      <div className="mt-6 flow-root">
+        <div className="inline-block w-full align-middle">
+          <div className="rounded-lg bg-gray-50 p-2 mb-8 xl:flex justify-between">
+            <div className="xl:w-1/2 pr-2">
+              <h2 className="text-lg font-medium mb-2">Stocks</h2>
+              <ReorderableWidgetList widgets={stocks} onReorder={setStocks} droppableId="stocks" />
             </div>
+            <div className="xl:w-1/2 xl:pl-2 pl-0">
+              <h2 className="text-lg font-medium mb-2">Cryptocurrencies</h2>
+              <ReorderableWidgetList widgets={cryptocurrencies} onReorder={setCryptocurrencies} droppableId="cryptocurrencies" />
+            </div>
+          </div>
         </div>
-      
-      
+      </div>
     </>
   );
 }
