@@ -20,7 +20,8 @@ export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { wid
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable droppableId={droppableId}>
+      {widgets.length > 0 && (
+        <Droppable droppableId={droppableId}>
         {(provided) => (
           <div {...provided.droppableProps} ref={provided.innerRef}>
             {widgets.map((widget: { id: string; refresh_rate: number; type: string; name: string; symbol: string; }, index: number) => (
@@ -35,7 +36,7 @@ export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { wid
             {provided.placeholder}
           </div>
         )}
-      </Droppable>
+      </Droppable> )}
     </DragDropContext>
   );
 }

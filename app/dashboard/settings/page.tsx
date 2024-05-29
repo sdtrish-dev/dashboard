@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { lusitana } from '@/app/ui/fonts';
 import { CreateWidget } from '@/app/ui/widgets/widget-buttons';
-import WidgetsTable from '@/app/ui/widgets/widgets-table';
+import DragDropWidgetsTable from '@/app/ui/widgets/drag-and-drop-widgets';
 import Pagination from '@/app/ui/invoices/pagination';
 import Search from '@/app/ui/search';
 import { fetchWidgetsPages } from '@/app/lib/data';
@@ -30,7 +30,7 @@ export default async function Page({
           <Search placeholder="Search widgets..." />
             <CreateWidget />
         </div>
-        <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={false} />
+        <DragDropWidgetsTable />
 
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

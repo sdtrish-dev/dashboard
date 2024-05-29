@@ -35,7 +35,7 @@ export default async function Page({
       <Suspense fallback={<CardsSkeleton />}>
         <div>
           <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Price Alerts <span><small>(changes greater than 2%)</small></span></h2>
-          <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={true} />
+          {/* <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={true} /> */}
         </div>
       </Suspense>
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Summary</h2>
