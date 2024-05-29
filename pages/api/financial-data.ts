@@ -1,4 +1,3 @@
-// pages/api/financial-data.ts
 import { NextApiRequest, NextApiResponse } from 'next';
 import { fetchFinancialData } from '../../app/lib/financial-services';
 

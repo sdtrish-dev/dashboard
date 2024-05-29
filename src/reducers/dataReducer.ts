@@ -1,29 +1,54 @@
-// src/reducers/dataReducer.ts
-import { DataState, WidgetState } from '../types';
-import { FETCH_DATA_REQUEST, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, DataActionTypes } from '../actions/dataActions';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { AppThunk } from '../store';
+
+interface WidgetState {
+  data: any | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface DataState {
+  [key: string]: WidgetState;
+}
 
 const initialState: DataState = {};
 
-const dataReducer = (state = initialState, action: DataActionTypes): DataState => {
-  switch (action.type) {
-    case FETCH_DATA_REQUEST:
-      return {
-        ...state,
-        [action.payload.symbol]: { data: null, isLoading: true, error: null },
-      };
-    case FETCH_DATA_SUCCESS:
-      return {
-        ...state,
-        [action.payload.symbol]: { data: action.payload.data, isLoading: false, error: null },
-      };
-    case FETCH_DATA_FAILURE:
-      return {
-        ...state,
-        [action.payload.symbol]: { data: null, isLoading: false, error: action.payload.error },
-      };
-    default:
-      return state;
+const dataSlice = createSlice({
+  name: 'data',
+  initialState,
+  reducers: {
+    fetchDataRequest(state, action: PayloadAction<{ symbol: string }>) {
+      const { symbol } = action.payload;
+      state[symbol] = { data: null, isLoading: true, error: null };
+    },
+    fetchDataSuccess(state, action: PayloadAction<{ symbol: string; data: any }>) {
+      const { symbol, data } = action.payload;
+      state[symbol] = { data, isLoading: false, error: null };
+    },
+    fetchDataFailure(state, action: PayloadAction<{ symbol: string; error: string }>) {
+      const { symbol, error } = action.payload;
+      state[symbol] = { data: null, isLoading: false, error };
+    },
+  },
+});
+
+export const { fetchDataRequest, fetchDataSuccess, fetchDataFailure } = dataSlice.actions;
+
+export default dataSlice.reducer;
+
+export const fetchData = (symbol: string, type: string, refreshRate: number): AppThunk => async dispatch => {
+  dispatch(fetchDataRequest({ symbol }));
+
+  try {
+    const res = await fetch(`/api/financial-data?symbol=${symbol}&type=${type}&refreshRate=${refreshRate}`);
+    const data = await res.json();
+
+    if (data && data['Meta Data']) {
+      dispatch(fetchDataSuccess({ symbol, data }));
+    } else {
+      dispatch(fetchDataFailure({ symbol, error: 'No data found' }));
+    }
+  } catch (err) {
+    dispatch(fetchDataFailure({ symbol, error: 'No data found' }));
   }
 };
-
-export default dataReducer;

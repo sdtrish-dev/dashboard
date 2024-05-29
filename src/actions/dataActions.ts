@@ -1,4 +1,3 @@
-// src/actions/dataActions.ts
 import { ThunkAction } from 'redux-thunk';
 import { RootState } from '../store';
 import { Action } from 'redux';
@@ -7,19 +6,19 @@ export const FETCH_DATA_REQUEST = 'FETCH_DATA_REQUEST';
 export const FETCH_DATA_SUCCESS = 'FETCH_DATA_SUCCESS';
 export const FETCH_DATA_FAILURE = 'FETCH_DATA_FAILURE';
 
-interface FetchDataRequestAction {
+export interface FetchDataRequestAction {
   type: typeof FETCH_DATA_REQUEST;
   payload: { symbol: string };
 }
 
-interface FetchDataSuccessAction {
+export interface FetchDataSuccessAction {
   type: typeof FETCH_DATA_SUCCESS;
-  payload: { symbol: string, data: any };
+  payload: { symbol: string; data: any };
 }
 
-interface FetchDataFailureAction {
+export interface FetchDataFailureAction {
   type: typeof FETCH_DATA_FAILURE;
-  payload: { symbol: string, error: string };
+  payload: { symbol: string; error: Error };
 }
 
 export type DataActionTypes = FetchDataRequestAction | FetchDataSuccessAction | FetchDataFailureAction;

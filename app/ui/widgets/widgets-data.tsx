@@ -1,10 +1,9 @@
-// app/dashboard/widgets/WidgetsData.tsx
 'use client';
 
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '@/src/store';
-import { fetchData } from '@/src/actions/dataActions';
+import { fetchData } from '@/src/reducers/dataReducer';
 
 interface WidgetsDataProps {
   symbol: string;
@@ -68,23 +67,21 @@ const WidgetsData: React.FC<WidgetsDataProps> = ({ symbol, type, refreshRate, sh
 
 export default WidgetsData;
 
-
-
 interface PriceAlertProps {
-    symbol: string;
-    type: string;
-    priceChangePercentage: number;
-    priceChangeIndicator: string;
+  symbol: string;
+  type: string;
+  priceChangePercentage: number;
+  priceChangeIndicator: string;
 }
 
 export function PriceAlert({ symbol, type, priceChangePercentage, priceChangeIndicator }: PriceAlertProps) {
-    if (Math.abs(priceChangePercentage) > 2) {
-        return (
-            <div className="font-bold">
-                Price change alert for {symbol} ({type}): The price has changed by<span style={{color: priceChangeIndicator}}> {priceChangePercentage.toFixed(2)}%</span>.
-            </div>
-        );
-    } 
+  if (Math.abs(priceChangePercentage) > 2) {
+    return (
+      <div className="font-bold">
+        Price change alert for {symbol} ({type}): The price has changed by<span style={{color: priceChangeIndicator}}> {priceChangePercentage.toFixed(2)}%</span>.
+      </div>
+    );
+  }
 
-    return <div>No alerts for {symbol}</div>;
+  return <div>No alerts for {symbol}</div>;
 }
