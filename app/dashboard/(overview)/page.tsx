@@ -7,7 +7,7 @@ import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
-import WidgetsTable from '@/app/ui/widgets/widgets-table';
+import WidgetsTable from '@/app/ui/widgets/widgets-table'
 import { fetchWidgetsPages } from '@/app/lib/data';
 
  
@@ -35,7 +35,7 @@ export default async function Page({
       <Suspense fallback={<CardsSkeleton />}>
         <div>
           <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Price Alerts <span><small>(changes greater than 2%)</small></span></h2>
-          {/* <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={true} /> */}
+          <WidgetsTable query={query} currentPage={currentPage} onlyShowAlerts={true} />
         </div>
       </Suspense>
       <h2 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>Summary</h2>

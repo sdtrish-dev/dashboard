@@ -23,7 +23,7 @@ export default async function WidgetsTable({
 
 
     return (
-        <DragDropWidgetsTable />
+        <DragDropWidgetsTable onlyShowAlerts={onlyShowAlerts}/>
     );
 }
 

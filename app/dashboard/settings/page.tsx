@@ -26,11 +26,11 @@ export default async function Page({
       <h1 className={`${lusitana.className} mb-4 text-xl md:text-2xl`}>
         Settings
       </h1>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
+        <div className="mb-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
           <Search placeholder="Search widgets..." />
             <CreateWidget />
         </div>
-        <DragDropWidgetsTable />
+        <DragDropWidgetsTable onlyShowAlerts={false}/>
 
       <div className="mt-5 flex w-full justify-center">
         <Pagination totalPages={totalPages} />

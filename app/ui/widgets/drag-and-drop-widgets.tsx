@@ -5,8 +5,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { WidgetCard } from '@/app/ui/widgets/widgets-table';
 import type { WidgetsTable } from '@/app/lib/definitions';
 
-export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { widgets: any, onReorder: (newWidgets: any) => void, droppableId: string }) {
-  const onDragEnd = (result: any) => {
+export function ReorderableWidgetList({ widgets, onReorder, droppableId, onlyShowAlerts }: { widgets: any, onReorder: (newWidgets: any) => void, droppableId: string, onlyShowAlerts: boolean }) {  const onDragEnd = (result: any) => {
     if (!result.destination) {
       return;
     }
@@ -28,7 +27,7 @@ export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { wid
               <Draggable key={widget.id} draggableId={widget.id.toString()} index={index}>
                 {(provided) => (
                   <div {...provided.draggableProps} {...provided.dragHandleProps} ref={provided.innerRef}>
-                    <WidgetCard widget={widget} onlyShowAlerts={false}/>
+                    <WidgetCard widget={widget} onlyShowAlerts={onlyShowAlerts}/>
                   </div>
                 )}
               </Draggable>
@@ -41,7 +40,7 @@ export function ReorderableWidgetList({ widgets, onReorder, droppableId }: { wid
   );
 }
 
-export default function DragDropWidgetsTable() {
+export default function DragDropWidgetsTable({ onlyShowAlerts }: { onlyShowAlerts: boolean }) {
   const [query, setQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [stocks, setStocks] = useState<WidgetsTable[]>([]);
@@ -69,16 +68,16 @@ export default function DragDropWidgetsTable() {
 
   return (
     <>
-      <div className="mt-6 flow-root">
+      <div className="flow-root">
         <div className="inline-block w-full align-middle">
-          <div className="rounded-lg bg-gray-50 p-2 mb-8 xl:flex justify-between">
-            <div className="xl:w-1/2 pr-2">
+          <div className="rounded-lg bg-gray-50 mb-8 xl:flex justify-between">
+            <div className="xl:w-1/2 p-2">
               <h2 className="text-lg font-medium mb-2">Stocks</h2>
-              <ReorderableWidgetList widgets={stocks} onReorder={setStocks} droppableId="stocks" />
+              <ReorderableWidgetList widgets={stocks} onReorder={setStocks} droppableId="stocks" onlyShowAlerts={onlyShowAlerts} />
             </div>
-            <div className="xl:w-1/2 xl:pl-2 pl-0">
+            <div className="xl:w-1/2 p-2">
               <h2 className="text-lg font-medium mb-2">Cryptocurrencies</h2>
-              <ReorderableWidgetList widgets={cryptocurrencies} onReorder={setCryptocurrencies} droppableId="cryptocurrencies" />
+              <ReorderableWidgetList widgets={cryptocurrencies} onReorder={setCryptocurrencies} droppableId="cryptocurrencies"  onlyShowAlerts={onlyShowAlerts}/>
             </div>
           </div>
         </div>
