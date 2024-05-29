@@ -7,7 +7,7 @@ import { fetchCardData } from '@/app/lib/data';
 import { Suspense } from 'react';
 import { RevenueChartSkeleton, LatestInvoicesSkeleton, CardsSkeleton } from '@/app/ui/skeletons';
 import { Metadata } from 'next';
-import WidgetsTable from '@/app/ui/widgets/widgets-table'
+import WidgetsTable from '@/app/ui/widgets/widgets-table';
 import { fetchWidgetsPages } from '@/app/lib/data';
 
  
