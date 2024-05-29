@@ -1,36 +1,32 @@
 'use client';
-import { useEffect, useState } from 'react';
+// WidgetsData.tsx
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../../../src/store';
+import { fetchData } from '../../../src/actions/dataActions';
 
-export default function WidgetsData({symbol, type, refreshRate, showAlert}: {symbol: string, type: string, refreshRate: number, showAlert: boolean}) {
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+
+interface WidgetsDataProps {
+    symbol: string;
+    type: string;
+    refreshRate: number;
+    showAlert: boolean;
+}
+
+const WidgetsData: React.FC<WidgetsDataProps> = ({ symbol, type, refreshRate, showAlert }) => {
+   const dispatch = useDispatch<AppDispatch>();
+  const { data, isLoading, error } = useSelector((state: RootState) => state.data);
+
 
   useEffect(() => {
-    const fetchData = async () => {
-    setIsLoading(true);
-    try {
-        const res = await fetch(`/api/financial-data?symbol=${symbol}&type=${type}&refreshRate=${refreshRate}`);
-        const newData = await res.json();
-            
-        if (newData && newData['Meta Data']) {
-            setData(newData);
-            setError(null); 
-        } else {
-            setData(null); 
-            setError(null);  
-        }
-    } catch (err: any) { 
-        setError(err.message);
-    } finally {
-        setIsLoading(false);
-    }
-    };
+    dispatch(fetchData(symbol, type, refreshRate));
+    const intervalId = setInterval(() => {
+      dispatch(fetchData(symbol, type, refreshRate));
+    }, refreshRate);
 
-    fetchData();
-    const intervalId = setInterval(fetchData, refreshRate);
     return () => clearInterval(intervalId);
-  }, [symbol, type, refreshRate]);
+  }, [dispatch, symbol, type, refreshRate]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -40,37 +36,39 @@ export default function WidgetsData({symbol, type, refreshRate, showAlert}: {sym
     return <div>Error: {error}</div>;
   }
 
-   if (!data || !data['Meta Data']) {
+  if (!data || !data['Meta Data']) {
     if (!isLoading && !showAlert) {
-        return <div className="text-red-700">Sorry, your API limit has been reached for today.</div>;
+      return <div className="text-red-700">Sorry, your API limit has been reached for today.</div>;
     }
     return null;
+  }
+
+  const isCrypto = data['Meta Data']['2. Digital Currency Code'] !== undefined;
+  const timeSeriesKey = isCrypto ? 'Time Series (Digital Currency Daily)' : 'Time Series (Daily)';
+  const latestDataKey = Object.keys(data[timeSeriesKey])[0];
+  const latestData = data[timeSeriesKey][latestDataKey];
+
+  const priceChange = parseFloat(latestData['4. close']) - parseFloat(latestData['1. open']);
+  const priceChangeIndicator = priceChange > 0 ? 'green' : 'red';
+  const priceChangePercentage = (priceChange / parseFloat(latestData['1. open'])) * 100;
+
+  return (
+    <div>
+      {showAlert && <PriceAlert symbol={symbol} type={type} priceChangePercentage={priceChangePercentage} priceChangeIndicator={priceChangeIndicator} />}
+      {!showAlert && (
+        <div>
+          <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+          <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+          <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
+          <p>Close: <span style={{ color: priceChangeIndicator }}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</span></p>
+        </div>
+      )}
+    </div>
+  );
 }
 
-    const isCrypto = data['Meta Data']['2. Digital Currency Code'] !== undefined;
-    const timeSeriesKey = isCrypto ? 'Time Series (Digital Currency Daily)' : 'Time Series (Daily)';
-    const latestDataKey = Object.keys(data[timeSeriesKey])[0];
-    const latestData = data[timeSeriesKey][latestDataKey];
+export default WidgetsData;
 
-    const priceChange = parseFloat(latestData['4. close']) - parseFloat(latestData['1. open']);
-    const priceChangeIndicator = priceChange > 0 ? 'green' : 'red';
-    const priceChangePercentage = (priceChange / parseFloat(latestData['1. open'])) * 100;
-
-    return (
-        <div>
-            {showAlert && <PriceAlert symbol={symbol} type={type} priceChangePercentage={priceChangePercentage}  priceChangeIndicator={priceChangeIndicator}/>}
-            {!showAlert && (
-               <div>
-                <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
-                <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
-                <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
-                <p>Close: <span style={{color: priceChangeIndicator}}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</span></p>
-            </div>  
-            )}
-            
-       </div>
-    );
-};
 
 interface PriceAlertProps {
     symbol: string;
