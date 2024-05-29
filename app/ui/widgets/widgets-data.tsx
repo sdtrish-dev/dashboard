@@ -1,23 +1,22 @@
+// app/dashboard/widgets/WidgetsData.tsx
 'use client';
-// WidgetsData.tsx
+
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../../../src/store';
-import { fetchData } from '../../../src/actions/dataActions';
-
-
+import { RootState, AppDispatch } from '@/src/store';
+import { fetchData } from '@/src/actions/dataActions';
 
 interface WidgetsDataProps {
-    symbol: string;
-    type: string;
-    refreshRate: number;
-    showAlert: boolean;
+  symbol: string;
+  type: string;
+  refreshRate: number;
+  showAlert: boolean;
 }
 
 const WidgetsData: React.FC<WidgetsDataProps> = ({ symbol, type, refreshRate, showAlert }) => {
-   const dispatch = useDispatch<AppDispatch>();
-  const { data, isLoading, error } = useSelector((state: RootState) => state.data);
-
+  const dispatch = useDispatch<AppDispatch>();
+  const widgetState = useSelector((state: RootState) => state.data[symbol] || { data: null, isLoading: true, error: null });
+  const { data, isLoading, error } = widgetState;
 
   useEffect(() => {
     dispatch(fetchData(symbol, type, refreshRate));
@@ -60,14 +59,15 @@ const WidgetsData: React.FC<WidgetsDataProps> = ({ symbol, type, refreshRate, sh
           <p>Open: ${Number(latestData['1. open']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
           <p>High: ${Number(latestData['2. high']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
           <p>Low: ${Number(latestData['3. low']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</p>
-          <p>Close: <span style={{ color: priceChangeIndicator }}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</span></p>
+          <p>Close: <span style={{color: priceChangeIndicator}}>${Number(latestData['4. close']).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 3 })}</span></p>
         </div>
       )}
     </div>
   );
-}
+};
 
 export default WidgetsData;
+
 
 
 interface PriceAlertProps {

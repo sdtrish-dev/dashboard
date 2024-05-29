@@ -1,30 +1,26 @@
-import { Action } from 'redux';
-import {
-  FETCH_DATA_REQUEST,
-  FETCH_DATA_SUCCESS,
-  FETCH_DATA_FAILURE,
-  DataState,
-  FetchDataRequestAction,
-  FetchDataSuccessAction,
-  FetchDataFailureAction
-} from '../types';
+// src/reducers/dataReducer.ts
+import { DataState, WidgetState } from '../types';
+import { FETCH_DATA_REQUEST, FETCH_DATA_SUCCESS, FETCH_DATA_FAILURE, DataActionTypes } from '../actions/dataActions';
 
-const initialState: DataState = {
-  data: null,
-  isLoading: false,
-  error: null,
-};
+const initialState: DataState = {};
 
-const dataReducer = (state = initialState, action: Action): DataState => {
+const dataReducer = (state = initialState, action: DataActionTypes): DataState => {
   switch (action.type) {
     case FETCH_DATA_REQUEST:
-      return { ...state, isLoading: true };
+      return {
+        ...state,
+        [action.payload.symbol]: { data: null, isLoading: true, error: null },
+      };
     case FETCH_DATA_SUCCESS:
-      const successAction = action as FetchDataSuccessAction;
-      return { ...state, isLoading: false, data: successAction.payload };
+      return {
+        ...state,
+        [action.payload.symbol]: { data: action.payload.data, isLoading: false, error: null },
+      };
     case FETCH_DATA_FAILURE:
-      const failureAction = action as FetchDataFailureAction;
-      return { ...state, isLoading: false, error: failureAction.error };
+      return {
+        ...state,
+        [action.payload.symbol]: { data: null, isLoading: false, error: action.payload.error },
+      };
     default:
       return state;
   }
