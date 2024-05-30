@@ -31,7 +31,7 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-dom": "18.2.0",
     "react-redux": "^9.1.2",
-    "redux": "^4.0.0",
+    "redux": "^5.0.0",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^3.1.0",
     "tailwindcss": "3.3.3",
@@ -51,6 +51,9 @@
     "eslint-config-prettier": "9.0.0",
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "0.5.4"
+  },
+  "resolutions": {
+    "redux": "^5.0.1"
   },
   "engines": {
     "node": ">=18.17.0"
